@@ -1,0 +1,56 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+/* ── Tailwind v4: class-based dark mode ────────────────────────────────── */
+@custom-variant dark (&:is(.dark *));
+
+/* ── Public layout: light/dark design tokens ───────────────────────────── */
+.public-layout {
+  /* Light (default) */
+  --bg-page:       #f7f9ff;
+  --bg-surface:    #edf0fa;
+  --bg-card:       #ffffff;
+  --bg-input:      #eef1fb;
+  --bg-subtle:     rgba(15, 23, 42, 0.04);
+  --border:        rgba(15, 23, 42, 0.09);
+  --border-strong: rgba(15, 23, 42, 0.15);
+  --nav-bg:        #ffffff;
+  --footer-bg:     #1e293b;
+  --sidebar-bg:    #f0f3fb;
+  --sidebar-border:#dde3f4;
+
+  color-scheme: light;
+}
+
+.public-layout.dark {
+  --bg-page:       #0a0f1e;
+  --bg-surface:    #0d1117;
+  --bg-card:       #141929;
+  --bg-input:      #161b22;
+  --bg-subtle:     rgba(255, 255, 255, 0.05);
+  --border:        rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --nav-bg:        #0a0f1e;
+  --footer-bg:     #111827;
+  --sidebar-bg:    #1c1f2e;
+  --sidebar-border:rgba(255, 255, 255, 0.08);
+
+  color-scheme: dark;
+}
+
+
+/* ── Leaflet map ───────────────────────────────────────────────────────── */
+.map-container {
+  height: 100%;
+  width: 100%;
+}
+
+/* Leaflet popup: respect theme */
+.public-layout:not(.dark) .leaflet-popup-content-wrapper {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 4px 16px rgba(15,23,42,0.12);
+}
+.public-layout:not(.dark) .leaflet-popup-tip {
+  background: #ffffff;
+}

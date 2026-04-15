@@ -9,6 +9,7 @@ import RegisterPage from './pages/RegisterPage'
 import VictimPage from './pages/VictimPage'
 import InitiativesPage from './pages/InitiativesPage'
 import SubmitPage from './pages/SubmitPage'
+import AboutPage from './pages/AboutPage'
 
 // Admin
 import { ContentProvider } from './context/ContentContext'
@@ -68,6 +69,7 @@ function PublicRoutes() {
           <Route path="/victims/:id" element={<VictimPage />} />
           <Route path="/initiatives" element={<InitiativesPage />} />
           <Route path="/submit" element={<SubmitPage />} />
+          <Route path="/about" element={<AboutPage />} />
         </Routes>
       </main>
       <Footer />

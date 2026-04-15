@@ -5,7 +5,7 @@ import { useContent } from '../context/ContentContext'
 export default function InitiativesPage() {
   const [initiatives, setInitiatives] = useState([])
   const heading    = useContent('initiatives_heading',    'Community Initiatives')
-  const subheading = useContent('initiatives_subheading', 'Local remembrance and peacebuilding activities in Plateau State.')
+  const subheading = useContent('initiatives_subheading', 'Local remembrance and peacebuilding activities across the Middle Belt region of Nigeria.')
 
   useEffect(() => {
     axios.get('/api/initiatives/').then(res => setInitiatives(res.data.results))

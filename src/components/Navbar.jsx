@@ -1,12 +1,14 @@
 import { NavLink, Link } from 'react-router-dom'
 import { useContent } from '../context/ContentContext'
 import { useTheme } from '../context/ThemeContext'
+import { useAuth } from '../admin/AuthContext'
 
 export default function Navbar() {
   const siteName    = useContent('site_name',    'Mapping Memory')
   const siteTagline = useContent('site_tagline', 'Nigeria')
   const navCta      = useContent('site_nav_cta', 'Submit a record')
   const { theme, toggle } = useTheme()
+  const { isAuthenticated } = useAuth()
   const isDark = theme === 'dark'
 
   const linkClass = ({ isActive }) =>
@@ -40,7 +42,7 @@ export default function Navbar() {
 
         {/* Nav links */}
         <nav className="hidden md:flex items-center gap-7">
-          <NavLink to="/register" className={linkClass}>Register</NavLink>
+          <NavLink to="/register" className={linkClass}>Memorial Register</NavLink>
           <NavLink to="/map" className={linkClass}>Map</NavLink>
           <NavLink to="/initiatives" className={linkClass}>Community</NavLink>
           <NavLink to="/about" className={linkClass}>About</NavLink>
@@ -72,17 +74,19 @@ export default function Navbar() {
           <NavLink
             to="/submit"
             className="text-sm font-medium text-white rounded-full px-4 py-1.5 transition-colors"
-            style={{ backgroundColor: '#b8860b' }}
+            style={{ backgroundColor: '#4b6bfb' }}
           >
             {navCta}
           </NavLink>
 
-          <Link
-            to="/admin-panel"
-            className="text-sm rounded-full px-4 py-1.5 transition-colors border dark:text-slate-400 dark:hover:text-white dark:border-white/15 text-slate-500 hover:text-slate-900 border-black/15"
-          >
-            Admin
-          </Link>
+          {isAuthenticated && (
+            <Link
+              to="/admin-panel"
+              className="text-sm rounded-full px-4 py-1.5 transition-colors border dark:text-slate-400 dark:hover:text-white dark:border-white/15 text-slate-500 hover:text-slate-900 border-black/15"
+            >
+              Admin
+            </Link>
+          )}
         </div>
       </div>
     </header>

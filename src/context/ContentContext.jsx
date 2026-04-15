@@ -8,7 +8,10 @@ export function ContentProvider({ children }) {
 
   useEffect(() => {
     axios.get('/api/content/')
-      .then(r => setContent(r.data))
+      .then(r => {
+        setContent(r.data)
+        if (r.data.site_name) document.title = r.data.site_name
+      })
       .catch(() => {}) // silently fall back to hardcoded defaults in components
   }, [])
 

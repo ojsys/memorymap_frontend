@@ -45,7 +45,7 @@ function groupByYear(victims) {
 }
 
 export default function MapPage() {
-  const mapAreaLabel = useContent('map_area_label', 'Phase 1 coverage')
+  const mapAreaLabel = useContent('map_area_label', 'Jos, Plateau State')
   const [features, setFeatures] = useState([])
   const [victims, setVictims] = useState([])
   const [selectedId, setSelectedId] = useState(null)

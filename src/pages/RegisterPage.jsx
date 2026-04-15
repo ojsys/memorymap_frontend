@@ -96,8 +96,8 @@ export default function RegisterPage() {
 
   const registerIntro        = useContent('register_intro',          'A record of individuals killed during ethno-religious and communal conflicts. All records are published with the consent of families or community representatives.')
   const registerYearsCovered = useContent('register_years_covered',  '2001–2024')
-  const pilotLocation        = useContent('register_pilot_location',  'Phase 1')
-  const pilotLabel           = useContent('register_pilot_label',     'CURRENT\nPHASE')
+  const pilotLocation        = useContent('register_pilot_location',  'Middle Belt')
+  const pilotLabel           = useContent('register_pilot_label',     'COVERAGE\nREGION')
 
   // Server-side data
   const [victims, setVictims]     = useState([])

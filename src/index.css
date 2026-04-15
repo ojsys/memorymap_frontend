@@ -6,18 +6,20 @@
 
 /* ── Public layout: light/dark design tokens ───────────────────────────── */
 .public-layout {
-  /* Light (default) */
-  --bg-page:       #f7f9ff;
-  --bg-surface:    #edf0fa;
+  /* Light — clean blue/white */
+  --bg-page:       #f5f8ff;
+  --bg-surface:    #eef2ff;
   --bg-card:       #ffffff;
-  --bg-input:      #eef1fb;
-  --bg-subtle:     rgba(15, 23, 42, 0.04);
-  --border:        rgba(15, 23, 42, 0.09);
-  --border-strong: rgba(15, 23, 42, 0.15);
+  --bg-input:      #f0f4ff;
+  --bg-subtle:     rgba(75, 107, 251, 0.05);
+  --border:        rgba(75, 107, 251, 0.13);
+  --border-strong: rgba(75, 107, 251, 0.22);
   --nav-bg:        #ffffff;
-  --footer-bg:     #1e293b;
-  --sidebar-bg:    #f0f3fb;
-  --sidebar-border:#dde3f4;
+  --footer-bg:     #0f1c5c;
+  --sidebar-bg:    #eef2ff;
+  --sidebar-border:#c7d2fe;
+  --primary:       #4b6bfb;
+  --card-shadow:   0 2px 20px rgba(75, 107, 251, 0.10);
 
   color-scheme: light;
 }
@@ -49,7 +51,7 @@
 .public-layout:not(.dark) .leaflet-popup-content-wrapper {
   background: #ffffff;
   color: #0f172a;
-  box-shadow: 0 4px 16px rgba(15,23,42,0.12);
+  box-shadow: 0 4px 20px rgba(75, 107, 251, 0.12);
 }
 .public-layout:not(.dark) .leaflet-popup-tip {
   background: #ffffff;

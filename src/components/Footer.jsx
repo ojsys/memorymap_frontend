@@ -14,7 +14,7 @@ export default function Footer() {
       {/* Quote section */}
       <div className="px-6 py-16 text-center">
         <div className="max-w-2xl mx-auto">
-          <div className="text-5xl font-serif leading-none mb-6" style={{ color: '#3b6ea5' }}>&ldquo;</div>
+          <div className="text-5xl font-serif leading-none mb-6" style={{ color: '#818cf8' }}>&ldquo;</div>
           <blockquote className="text-white text-xl md:text-2xl font-serif italic leading-relaxed mb-6">
             {quote}
           </blockquote>

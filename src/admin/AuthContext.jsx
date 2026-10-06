@@ -8,13 +8,17 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('mm_admin_token'))
   const [user, setUser]   = useState(null)
 
+  const refreshUser = useCallback(() =>
+    api.get('/me/')
+      .then(r => setUser(r.data))
+      .catch(() => setUser(null))
+  , [])
+
   // Fetch /api/me/ whenever we have a valid token
   useEffect(() => {
     if (!token) { setUser(null); return }
-    api.get('/api/me/')
-      .then(r => setUser(r.data))
-      .catch(() => setUser(null))
-  }, [token])
+    refreshUser()
+  }, [token, refreshUser])
 
   const login = useCallback(async (username, password) => {
     const res = await axios.post('/api/token/', { username, password })
@@ -37,6 +41,8 @@ export function AuthProvider({ children }) {
       isAuthenticated: !!token,
       isSuperuser:     user?.is_superuser ?? false,
       isCVT:           user?.is_cvt ?? false,
+      role:            user?.role ?? null,
+      refreshUser,
       login,
       logout,
     }}>

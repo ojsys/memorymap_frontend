@@ -70,7 +70,7 @@ export default function ImportDetailPage() {
 
   return (
     <AdminLayout>
-      <div className="px-8 py-8 max-w-5xl">
+      <div className="px-4 md:px-8 py-8 max-w-5xl">
         {/* Back */}
         <Link to="/admin-panel/imports" className="flex items-center gap-2 text-slate-500 hover:text-white text-sm mb-6 transition-colors">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

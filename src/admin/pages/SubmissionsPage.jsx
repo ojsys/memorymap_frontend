@@ -33,22 +33,12 @@ export default function SubmissionsPage() {
   const [submissions, setSubs]   = useState([])
   const [loading, setLoading]    = useState(true)
   const [statusFilter, setFilter] = useState('')
-  const [pendingCount, setPending] = useState(0)
 
   const fetchAll = useCallback(async () => {
     setLoading(true)
     try {
-      const [filtered, pending] = await Promise.all([
-        api.get('/api/submissions/', { params: statusFilter ? { status: statusFilter } : {} }),
-        statusFilter ? api.get('/api/submissions/', { params: { status: 'SUBMITTED' } }) : null,
-      ])
+      const filtered = await api.get('/submissions/', { params: statusFilter ? { status: statusFilter } : {} })
       setSubs(filtered.data.results ?? filtered.data)
-      if (pending) {
-        setPending((pending.data.results ?? pending.data).length)
-      } else {
-        const sub = (filtered.data.results ?? filtered.data).filter(s => s.status === 'SUBMITTED')
-        setPending(sub.length)
-      }
     } catch {
       setSubs([])
     } finally {
@@ -59,8 +49,8 @@ export default function SubmissionsPage() {
   useEffect(() => { fetchAll() }, [fetchAll])
 
   return (
-    <AdminLayout pendingCount={pendingCount}>
-      <div className="p-8">
+    <AdminLayout>
+      <div className="px-4 md:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>

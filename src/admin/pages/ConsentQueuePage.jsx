@@ -38,8 +38,8 @@ export default function ConsentQueuePage() {
   }
 
   return (
-    <AdminLayout pendingCount={pending.length}>
-      <div className="px-8 py-8">
+    <AdminLayout>
+      <div className="px-4 md:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-white">Consent Queue</h1>
           <p className="text-slate-500 text-sm mt-1">

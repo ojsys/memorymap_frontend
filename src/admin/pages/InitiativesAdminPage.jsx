@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import AdminLayout from '../components/AdminLayout'
+import { ConfirmDialog } from '../components/Modal'
+import { inputCls, inputStyle } from '../components/formStyles'
 import { useToast } from '../components/Toast'
 import api from '../api'
 
-const inputCls  = "w-full px-3 py-2.5 text-sm text-white rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-slate-600"
-const inputStyle = { backgroundColor: '#0a0f1e', border: '1px solid rgba(255,255,255,0.08)' }
-
-const EMPTY = { name: '', organising_body: '', description: '', date: '', location_name: '', url: '' }
+const EMPTY = { name: '', organising_body: '', description: '', date: '', location_name: '', location_lat: '', location_lng: '', url: '' }
 
 export default function InitiativesAdminPage() {
   const toast = useToast()
@@ -15,16 +15,43 @@ export default function InitiativesAdminPage() {
   const [editing, setEditing]   = useState(null)
   const [form, setForm]         = useState(EMPTY)
   const [saving, setSaving]     = useState(false)
+  const [deleting, setDeleting] = useState(null)
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  const load = () => api.get('/initiatives/?page_size=100&ordering=-date').then(r => setItems(r.data.results ?? []))
+  const load = () => api.get('/initiatives/?page_size=100').then(r => setItems(r.data.results ?? []))
   useEffect(() => { load() }, [])
 
-  const openNew  = () => { setEditing(null); setForm(EMPTY); setShowForm(true) }
+  const openNew  = useCallback(() => { setEditing(null); setForm(EMPTY); setShowForm(true) }, [])
   const openEdit = (item) => {
     setEditing(item.id)
     setForm({ name: item.name, organising_body: item.organising_body, description: item.description,
-              date: item.date ?? '', location_name: item.location_name ?? '', url: item.url ?? '' })
+              date: item.date ?? '', location_name: item.location_name ?? '', url: item.url ?? '',
+              location_lat: item.location_lat ?? '', location_lng: item.location_lng ?? '' })
     setShowForm(true)
+  }
+
+  useEffect(() => {
+    if (location.pathname.endsWith('/new')) openNew()
+  }, [location.pathname, openNew])
+
+  const closeForm = () => {
+    setShowForm(false)
+    if (location.pathname.endsWith('/new')) navigate('/admin-panel/initiatives', { replace: true })
+  }
+
+  const handleDelete = async () => {
+    setSaving(true)
+    try {
+      await api.delete(`/initiatives/${deleting.id}/`)
+      toast('Initiative deleted.', 'success')
+      setDeleting(null)
+      load()
+    } catch {
+      toast('Failed to delete initiative.', 'error')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const set = f => e => setForm(prev => ({ ...prev, [f]: e.target.value }))
@@ -36,7 +63,10 @@ export default function InitiativesAdminPage() {
     }
     setSaving(true)
     try {
-      const payload = { ...form, date: form.date || null, url: form.url || null, location_name: form.location_name || '' }
+      const payload = {
+        ...form, date: form.date || null, url: form.url || '', location_name: form.location_name || '',
+        location_lat: form.location_lat || null, location_lng: form.location_lng || null,
+      }
       if (editing) {
         await api.patch(`/initiatives/${editing}/`, payload)
         toast('Initiative updated.', 'success')
@@ -44,7 +74,7 @@ export default function InitiativesAdminPage() {
         await api.post('/initiatives/', payload)
         toast('Initiative added.', 'success')
       }
-      setShowForm(false)
+      closeForm()
       load()
     } catch {
       toast('Failed to save initiative.', 'error')
@@ -55,13 +85,13 @@ export default function InitiativesAdminPage() {
 
   return (
     <AdminLayout>
-      <div className="px-8 py-8">
+      <div className="px-4 md:px-8 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">Community Initiatives</h1>
             <p className="text-slate-500 text-sm mt-1">{items.length} initiatives</p>
           </div>
-          <button onClick={openNew}
+          <button onClick={() => navigate('/admin-panel/initiatives/new')}
             className="flex items-center gap-2 text-sm font-semibold text-white px-4 py-2.5 rounded-xl"
             style={{ backgroundColor: '#3b82f6' }}>
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -89,11 +119,10 @@ export default function InitiativesAdminPage() {
                 <p className="text-sm text-slate-300 leading-relaxed line-clamp-2">{item.description}</p>
                 {item.url && <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:underline mt-1 block">{item.url}</a>}
               </div>
-              <button onClick={() => openEdit(item)} className="text-slate-600 hover:text-blue-400 transition-colors shrink-0 mt-0.5">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                </svg>
-              </button>
+              <div className="flex gap-1 shrink-0">
+                <button onClick={() => openEdit(item)} className="px-2.5 py-1 rounded-lg text-xs text-slate-300 hover:text-white hover:bg-white/5">Edit</button>
+                <button onClick={() => setDeleting(item)} className="px-2.5 py-1 rounded-lg text-xs text-slate-500 hover:text-red-400 hover:bg-white/5">Delete</button>
+              </div>
             </div>
           ))}
         </div>
@@ -101,12 +130,12 @@ export default function InitiativesAdminPage() {
 
       {/* Form modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
-          <form onSubmit={handleSubmit} className="w-full max-w-lg rounded-2xl p-6 space-y-4 relative"
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 overflow-y-auto" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
+          <form onSubmit={handleSubmit} className="w-full max-w-lg rounded-2xl p-6 space-y-4 relative my-auto"
             style={{ backgroundColor: '#141929', border: '1px solid rgba(255,255,255,0.1)' }}>
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-white">{editing ? 'Edit initiative' : 'Add initiative'}</h2>
-              <button type="button" onClick={() => setShowForm(false)} className="text-slate-500 hover:text-white">✕</button>
+              <button type="button" onClick={closeForm} className="text-slate-500 hover:text-white">✕</button>
             </div>
 
             {[
@@ -122,6 +151,14 @@ export default function InitiativesAdminPage() {
                 <input type="text" value={form[f.key]} onChange={set(f.key)} placeholder={f.placeholder} className={inputCls} style={inputStyle} />
               </div>
             ))}
+
+            <div>
+              <label className="block text-xs font-medium text-slate-400 mb-1.5">Map location (optional)</label>
+              <div className="grid grid-cols-2 gap-3">
+                <input type="text" value={form.location_lat} onChange={set('location_lat')} placeholder="Latitude e.g. 9.917" className={inputCls} style={inputStyle} />
+                <input type="text" value={form.location_lng} onChange={set('location_lng')} placeholder="Longitude e.g. 8.896" className={inputCls} style={inputStyle} />
+              </div>
+            </div>
 
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1.5">Date</label>
@@ -141,12 +178,22 @@ export default function InitiativesAdminPage() {
                 style={{ backgroundColor: '#3b82f6' }}>
                 {saving ? 'Saving…' : editing ? 'Save changes' : 'Add initiative'}
               </button>
-              <button type="button" onClick={() => setShowForm(false)}
+              <button type="button" onClick={closeForm}
                 className="px-5 py-2.5 rounded-xl text-sm text-slate-400 hover:text-white"
                 style={{ border: '1px solid rgba(255,255,255,0.1)' }}>Cancel</button>
             </div>
           </form>
         </div>
+      )}
+
+      {deleting && (
+        <ConfirmDialog
+          title="Delete initiative?"
+          message={`"${deleting.name}" will be removed from the public Initiatives page. This cannot be undone.`}
+          busy={saving}
+          onConfirm={handleDelete}
+          onCancel={() => setDeleting(null)}
+        />
       )}
     </AdminLayout>
   )

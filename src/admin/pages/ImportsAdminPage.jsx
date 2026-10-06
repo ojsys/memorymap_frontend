@@ -77,7 +77,7 @@ export default function ImportsAdminPage() {
 
   return (
     <AdminLayout>
-      <div className="px-8 py-8 max-w-5xl">
+      <div className="px-4 md:px-8 py-8 max-w-5xl">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">Bulk Import</h1>

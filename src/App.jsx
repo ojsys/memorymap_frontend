@@ -28,6 +28,8 @@ import ImportDetailPage from './admin/pages/ImportDetailPage'
 import SubmissionsPage from './admin/pages/SubmissionsPage'
 import SubmissionDetailPage from './admin/pages/SubmissionDetailPage'
 import ContentPage from './admin/pages/ContentPage'
+import UsersPage from './admin/pages/UsersPage'
+import ProfilePage from './admin/pages/ProfilePage'
 
 function RequireAuth({ children }) {
   const { isAuthenticated } = useAuth()
@@ -45,12 +47,16 @@ function AdminRoutes() {
       <Route path="oral-histories" element={<RequireAuth><OralHistoriesAdminPage /></RequireAuth>} />
       <Route path="oral-histories/new" element={<RequireAuth><OralHistoriesAdminPage /></RequireAuth>} />
       <Route path="initiatives" element={<RequireAuth><InitiativesAdminPage /></RequireAuth>} />
+      <Route path="initiatives/new" element={<RequireAuth><InitiativesAdminPage /></RequireAuth>} />
       <Route path="consent" element={<RequireAuth><ConsentQueuePage /></RequireAuth>} />
       <Route path="imports" element={<RequireAuth><ImportsAdminPage /></RequireAuth>} />
       <Route path="imports/:id" element={<RequireAuth><ImportDetailPage /></RequireAuth>} />
       <Route path="submissions" element={<RequireAuth><SubmissionsPage /></RequireAuth>} />
       <Route path="submissions/:id" element={<RequireAuth><SubmissionDetailPage /></RequireAuth>} />
       <Route path="content" element={<RequireAuth><ContentPage /></RequireAuth>} />
+      <Route path="users" element={<RequireAuth><UsersPage /></RequireAuth>} />
+      <Route path="users/new" element={<RequireAuth><UsersPage /></RequireAuth>} />
+      <Route path="profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
     </Routes>
   )
 }

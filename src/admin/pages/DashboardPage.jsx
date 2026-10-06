@@ -32,24 +32,29 @@ export default function DashboardPage() {
   const [stats, setStats]           = useState(null)
   const [recent, setRecent]         = useState([])
   const [pending, setPending]       = useState([])
-  const [submissions, setSubmissions] = useState([])
+  const [allCount, setAllCount]     = useState(null)
+  const [pendingCount, setPendingCount]       = useState(0)
+  const [submissionCount, setSubmissionCount] = useState(0)
 
   useEffect(() => {
     api.get('/victims/stats/').then(r => setStats(r.data))
-    api.get('/victims/?ordering=-created_at&page_size=8').then(r => setRecent(r.data.results ?? []))
-    api.get('/victims/?consent_status=PENDING&page_size=5').then(r => setPending(r.data.results ?? []))
-    api.get('/submissions/?status=SUBMITTED').then(r => setSubmissions(r.data.results ?? r.data)).catch(() => {})
+    api.get('/victims/?ordering=-created_at&page_size=8').then(r => {
+      setRecent(r.data.results ?? [])
+      setAllCount(r.data.count ?? 0)   // staff see every record, including PENDING
+    })
+    api.get('/victims/?consent_status=PENDING&page_size=5').then(r => {
+      setPending(r.data.results ?? [])
+      setPendingCount(r.data.count ?? 0)
+    })
+    api.get('/submissions/?status=SUBMITTED&page_size=1').then(r => setSubmissionCount(r.data.count ?? 0)).catch(() => {})
   }, [])
 
-  const pendingCount     = pending.length
-  const submissionCount  = submissions.length
-
   return (
-    <AdminLayout pendingCount={pendingCount} submissionCount={submissionCount}>
-      <div className="px-8 py-8">
+    <AdminLayout>
+      <div className="px-4 md:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-white">Overview</h1>
+            <h1 className="text-2xl font-bold text-white">Dashboard</h1>
             <p className="text-slate-500 text-sm mt-1">{adminSubtitle}</p>
           </div>
           <Link
@@ -65,8 +70,8 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <StatCard label="TOTAL RECORDS" value={stats ? (stats.total + (stats.record_type_counts?.anonymous ?? 0)).toLocaleString() : null} />
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          <StatCard label="TOTAL RECORDS" value={allCount?.toLocaleString()} />
           <StatCard label="PUBLICLY VISIBLE" value={stats?.total?.toLocaleString()} />
           <StatCard label="ORAL HISTORIES" value={stats?.oral_histories?.toLocaleString()} />
           <StatCard label="PENDING CONSENT" value={pendingCount} accent={pendingCount > 0} />
@@ -147,14 +152,15 @@ export default function DashboardPage() {
                   </div>
                 )}
                 {pending.map((v, i) => (
-                  <div
+                  <Link
                     key={v.id}
-                    className="px-4 py-3"
+                    to={`/admin-panel/victims/${v.id}/edit`}
+                    className="block px-4 py-3 hover:bg-white/5"
                     style={{ borderTop: i > 0 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}
                   >
                     <p className="text-sm text-white truncate">{v.display_name}</p>
                     <p className="text-xs text-slate-500">{v.community_ward}</p>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

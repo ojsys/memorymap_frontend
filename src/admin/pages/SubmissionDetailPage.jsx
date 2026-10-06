@@ -41,7 +41,7 @@ export default function SubmissionDetailPage() {
   const [error, setError]       = useState(null)
 
   useEffect(() => {
-    api.get(`/api/submissions/${id}/`)
+    api.get(`/submissions/${id}/`)
       .then(r => { setSub(r.data); setNotes(r.data.review_notes || '') })
       .catch(() => setError('Could not load submission.'))
       .finally(() => setLoading(false))
@@ -51,7 +51,7 @@ export default function SubmissionDetailPage() {
     setActing(action)
     setError(null)
     try {
-      const url = `/api/submissions/${id}/${action === 'needs_info' ? 'request-info' : action}/`
+      const url = `/submissions/${id}/${action === 'needs_info' ? 'request-info' : action}/`
       await api.post(url, { review_notes: notes })
       navigate('/admin-panel/submissions')
     } catch (e) {
@@ -71,7 +71,7 @@ export default function SubmissionDetailPage() {
   if (error && !sub) {
     return (
       <AdminLayout>
-        <div className="p-8">
+        <div className="px-4 md:px-8 py-8">
           <p className="text-red-400">{error}</p>
           <Link to="/admin-panel/submissions" className="text-blue-400 text-sm mt-4 block">← Back to submissions</Link>
         </div>
@@ -84,7 +84,7 @@ export default function SubmissionDetailPage() {
 
   return (
     <AdminLayout>
-      <div className="p-8 max-w-4xl">
+      <div className="px-4 md:px-8 py-8 max-w-4xl">
 
         {/* Header */}
         <div className="flex items-start justify-between mb-8">

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import AdminLayout from '../components/AdminLayout'
+import { ConfirmDialog } from '../components/Modal'
 import { useToast } from '../components/Toast'
+import { useAuth } from '../AuthContext'
 import api from '../api'
 
 const KNOWN_WARDS = [
@@ -108,6 +110,22 @@ export default function VictimFormPage() {
   const [errors, setErrors] = useState({})
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(isEditing)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+  const { isSuperuser } = useAuth()
+
+  const handleDelete = async () => {
+    setDeleting(true)
+    try {
+      await api.delete(`/victims/${id}/`)
+      toast('Record deleted.', 'success')
+      navigate('/admin-panel/victims')
+    } catch {
+      toast('Failed to delete record.', 'error')
+      setDeleting(false)
+      setConfirmDelete(false)
+    }
+  }
 
   useEffect(() => {
     if (!isEditing) return
@@ -200,7 +218,7 @@ export default function VictimFormPage() {
 
   return (
     <AdminLayout>
-      <div className="px-8 py-8 max-w-4xl">
+      <div className="px-4 md:px-8 py-8 max-w-4xl">
         {/* Header */}
         <div className="flex items-center gap-3 mb-2">
           <Link to="/admin-panel/victims" className="text-slate-500 hover:text-white transition-colors">
@@ -341,8 +359,30 @@ export default function VictimFormPage() {
             >
               Cancel
             </Link>
+            {isEditing && form.consent_status !== 'PENDING' && (
+              <a href={`/victims/${id}`} target="_blank" rel="noopener noreferrer"
+                className="text-sm text-blue-400 hover:underline ml-2">
+                View on site ↗
+              </a>
+            )}
+            {isEditing && isSuperuser && (
+              <button type="button" onClick={() => setConfirmDelete(true)}
+                className="ml-auto px-4 py-2.5 rounded-xl text-sm text-red-400 hover:bg-red-500/10 transition-colors">
+                Delete record
+              </button>
+            )}
           </div>
         </form>
+
+        {confirmDelete && (
+          <ConfirmDialog
+            title="Delete this victim record?"
+            message={`This permanently removes ${form.full_name || 'this record'} and any linked oral histories from the memorial. If the family has withdrawn consent, consider setting the record to PENDING instead, which hides it without losing data.`}
+            busy={deleting}
+            onConfirm={handleDelete}
+            onCancel={() => setConfirmDelete(false)}
+          />
+        )}
       </div>
     </AdminLayout>
   )
